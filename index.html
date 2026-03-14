@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brikk Mini Click & Win!</title>
+<style>
+  body { font-family: Arial; text-align:center; background:#f0f8ff; }
+  #game-board { display:grid; grid-template-columns:repeat(3,80px); grid-gap:5px; justify-content:center; margin-top:30px; }
+  .cell { width:80px; height:80px; background:#00bfff; color:white; display:flex; justify-content:center; align-items:center; font-size:14px; border-radius:8px; cursor:pointer; user-select:none; text-align:center; padding:5px; }
+  .cell.revealed { background:#87cefa; cursor:default; }
+  #message { margin-top:20px; font-size:16px; font-weight:bold; }
+</style>
+</head>
+<body>
+
+<h2>🎉 FC HOME MALOLOS Mini Click & Win!</h2>
+<p>Click a cell to reveal your prize. Only one try per play!</p>
+
+<div id="game-board"></div>
+<p id="message"></p>
+
+<script>
+// 3x3 grid
+const totalCells = 9;
+const gameBoard = document.getElementById("game-board");
+const message = document.getElementById("message");
+
+// Prizes + bomb setup
+const prizes = [
+  "You got 500 PHP discount (Tonik financing)!",
+  "You got 500 PHP discount (Tonik financing)!",
+  "You got free soundbar when you purchase (Samwon 65\" TV)!",
+  "You got 1000 PHP discount (twin-tub washing machine)!",
+  "You got 50% discount* (small appliances)!",
+  "You got 50% discount* (small appliances)!",
+  "You got 50% discount* (small appliances)!",
+  "Try again next time!" // bomb
+];
+
+// Fill remaining cells as empty
+let cellValues = Array(totalCells).fill("empty");
+
+// Randomly assign prizes
+prizes.forEach(prize => {
+  let idx;
+  do { idx = Math.floor(Math.random() * totalCells); } 
+  while (cellValues[idx] !== "empty");
+  cellValues[idx] = prize;
+});
+
+// Create cells
+for (let i = 0; i < totalCells; i++) {
+  const cell = document.createElement("div");
+  cell.classList.add("cell");
+  cell.dataset.index = i;
+  gameBoard.appendChild(cell);
+
+  cell.addEventListener("click", () => {
+    if (cell.classList.contains("revealed")) return;
+
+    // Reveal the clicked cell
+    cell.classList.add("revealed");
+    const prize = cellValues[i];
+    cell.textContent = prize.includes("discount") || prize.includes("free") ? "🎁" : "💣";
+    message.textContent = prize;
+
+    // Disable all other cells
+    document.querySelectorAll('.cell').forEach(c => {
+      if (!c.classList.contains("revealed")) {
+        c.classList.add("revealed");
+        c.style.cursor = "default";
+      }
+    });
+  });
+}
+</script>
+
+</body>
+</html>
